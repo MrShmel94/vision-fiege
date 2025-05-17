@@ -43,6 +43,12 @@ import base64js from "base64-js";
 import pako from "pako";
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+
+const WS_ENDPOINT = `${BASE_URL.replace(/^http/, 'https')}/attendance`;
+
 const STATUSES = {};
 const SHIFTS = {};
 const allDepartments = new Set(["Site"]);
@@ -299,7 +305,7 @@ export default function AttendanceView() {
 
     stompClient.current = new Client({
       webSocketFactory: () =>
-        new SockJS("http://localhost:8080/attendance", null, { xhrWithCredentials: true }),
+        new SockJS(WS_ENDPOINT, null, { xhrWithCredentials: true }),
       reconnectDelay: 5000,
       onConnect: (frame) => {
         const {startDate, endDate} = getDateRange(selectedMonth);
