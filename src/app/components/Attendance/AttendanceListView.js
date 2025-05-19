@@ -151,8 +151,6 @@ export default function AttendanceView() {
 
   const subscribeToTopic = (startDate, endDate) => {
     const topic = `/topic/attendanceList/${startDate}_${endDate}`;
-
-    console.log("topic", topic);
     
     if (topic === currentTopic) return;
     
@@ -173,7 +171,6 @@ export default function AttendanceView() {
 
     subscriptionRef.current = stompClient.current.subscribe(topic, (message) => {
       const rawData = decompress(message.body);
-      console.log("Raw data", rawData);
       
       if (Array.isArray(rawData)) {
         if (rawData.length === 0) {

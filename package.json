@@ -46,6 +46,7 @@
     "react-is": "^19.0.0",
     "react-redux": "^9.2.0",
     "react-select": "^5.10.1",
+    "react-virtualized-auto-sizer": "^1.0.26",
     "react-virtuoso": "^4.12.5",
     "react-window": "^1.8.11",
     "recharts": "^2.15.2",

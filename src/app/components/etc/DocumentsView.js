@@ -211,7 +211,6 @@ const DocumentsView = () => {
 
   const handleTrainingSubmit = async () => {
     setIsLoading(true);
-    console.log("Positions", trainingData.positions);
     try {
       const formattedData = {
         documentId: trainingData.documentId,
@@ -225,8 +224,6 @@ const DocumentsView = () => {
         isAutoTraining: trainingData.isAutoTraining,
         documentName: trainingData.documentName
       };
-
-      console.log("Formatted Data", formattedData);
 
       await axiosInstance.post('/etc/savePlaningTraining', formattedData);
       handleTrainingDialogClose();

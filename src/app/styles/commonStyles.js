@@ -458,3 +458,128 @@ const getContrastColor = (bgColor) => {
   
   return brightness > 128 ? "#000" : "#FFF";
 };
+
+export const PageHeader = styled(motion.div)(({ theme }) => ({
+  background: 'rgba(255, 255, 255, 0.95)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '24px',
+  padding: theme.spacing(4),
+  marginBottom: theme.spacing(3),
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  position: 'relative',
+  overflow: 'hidden',
+  maxWidth: '800px',
+  margin: '0 auto 24px',
+  textAlign: 'center',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #E30613, #FF4D6D, #E30613)',
+    borderRadius: '4px 4px 0 0',
+    animation: 'gradientFlow 3s ease infinite',
+  },
+  '& .MuiTypography-root': {
+    position: 'relative',
+    zIndex: 1,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'radial-gradient(circle at top right, rgba(227, 6, 19, 0.05), transparent 70%)',
+    pointerEvents: 'none',
+  },
+  '@keyframes gradientFlow': {
+    '0%': {
+      backgroundPosition: '0% 50%',
+    },
+    '50%': {
+      backgroundPosition: '100% 50%',
+    },
+    '100%': {
+      backgroundPosition: '0% 50%',
+    },
+  },
+}));
+
+export const PageHeaderTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '2.5rem',
+  fontWeight: 700,
+  color: '#E30613',
+  marginBottom: theme.spacing(1),
+  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  letterSpacing: '-0.5px',
+  background: 'linear-gradient(45deg, #E30613, #FF4D6D)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  animation: 'titleGradient 3s ease infinite',
+  '@keyframes titleGradient': {
+    '0%': {
+      backgroundPosition: '0% 50%',
+    },
+    '50%': {
+      backgroundPosition: '100% 50%',
+    },
+    '100%': {
+      backgroundPosition: '0% 50%',
+    },
+  },
+}));
+
+export const PageHeaderSubtitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.1rem',
+  color: theme.palette.text.secondary,
+  fontWeight: 500,
+  maxWidth: '600px',
+  margin: '0 auto',
+  lineHeight: 1.6,
+}));
+
+export const CenteredCard = styled(Box)(({ theme }) => ({
+  maxWidth: '800px',
+  margin: '0 auto',
+  background: 'rgba(255, 255, 255, 0.95)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '24px',
+  padding: theme.spacing(3),
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #E30613, #FF4D6D, #E30613)',
+    borderRadius: '4px 4px 0 0',
+  },
+}));
+
+export const PageContent = styled(Box)(({ theme }) => ({
+  height: 'calc(100vh - 200px)',
+  overflow: 'auto',
+  padding: theme.spacing(2),
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: '4px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: '4px',
+    '&:hover': {
+      background: 'rgba(0, 0, 0, 0.3)',
+    },
+  },
+}));

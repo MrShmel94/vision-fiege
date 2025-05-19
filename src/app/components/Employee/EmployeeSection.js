@@ -94,12 +94,10 @@ const EmployeeSection = ({
   const handleSave = async () => {
     try {
       const transformedData = transformEmployeeData(editedData);
-      console.log("TRANSFORMED DATA", transformedData);
       await axiosInstance.post(`employee/updateEmployee`, transformedData);
       onUpdate?.(transformedData);
       setIsEditing(false);
     } catch (error) {
-      console.log("ERROR", error);
       setErrorOverlay({
         open: true,
         message: `Failed to update ${title.toLowerCase()}. Please try again.`,

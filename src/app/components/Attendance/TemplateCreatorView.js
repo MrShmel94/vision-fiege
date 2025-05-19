@@ -131,7 +131,6 @@ export default function TemplateCreator() {
     };
 
     const isCellComplete = (dayData) => {
-        console.log("DAY DATA", dayData);
         return (dayData.statusCode !== undefined && dayData.statusCode !== null) && dayData.shiftCode;
     };
 
@@ -151,7 +150,6 @@ export default function TemplateCreator() {
     };
 
     const handleTemplateSave = () => {
-        console.log("Schedule -> ", schedule);
         if (!templateName) {
             Swal.fire({
                 title: "Missing template name",
@@ -310,9 +308,6 @@ export default function TemplateCreator() {
                         </Box>
                         {daysArray.map((day) => {
                             const dayData = schedule[day] || {};
-                            console.log("DAY", day);
-                            console.log("SCHEDULE", schedule);
-                            console.log("DAY DATA IN TEMPLATE CREATOR", dayData);
                             const cellContent = dayData.statusCode || "";
                             const shiftSymbol = dayData.shiftCode ? dayData.shiftCode : "";
                             const isComplete = isCellComplete(dayData);

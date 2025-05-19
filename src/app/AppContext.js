@@ -6,26 +6,48 @@ import AppWithInterceptor from "./AppWithInterceptor.js";
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-
-  const [currentView, setCurrentView] = useState("dashboard");
+  const [currentView, setCurrentView] = useState("welcome");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [errorOverlay, setErrorOverlay] = useState({ open: false, title: "", message: "" });
   const [selectedExpertis, setSelectedExpertis] = useState(null);
   const [initialData, setInitialData] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    //TODO: check if user is logged in
-    setIsLoggedIn(true);
-    setInitialized(true);
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+          setIsLoggedIn(true);
+          setCurrentView('dashboard');
+        } else {
+          setIsLoggedIn(false);
+          setCurrentView('welcome');
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsLoggedIn(false);
+        setCurrentView('welcome');
+      } finally {
+        setInitialized(true);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const contextValue = {
     currentView,
-    setCurrentView,
+    setCurrentView: (view) => {
+      setCurrentView(view);
+    },
     isLoggedIn,
-    setIsLoggedIn,
+    setIsLoggedIn: (loggedIn) => {
+      setIsLoggedIn(loggedIn);
+    },
     isLoading,
     setIsLoading,
     errorOverlay,
@@ -33,7 +55,9 @@ export const AppProvider = ({ children }) => {
     selectedExpertis,
     setSelectedExpertis,
     initialData,
-    setInitialData
+    setInitialData,
+    user,
+    setUser
   };
 
   return (
@@ -46,7 +70,7 @@ export const AppProvider = ({ children }) => {
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (!context) {
-    console.error("🚨 useAppContext called outside of AppProvider!");
+    throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
 };

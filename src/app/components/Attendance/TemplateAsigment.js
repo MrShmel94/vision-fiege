@@ -114,14 +114,12 @@ const TemplateAssignment = () => {
   const assignEmployees = async () => {
     const selectedExpertis = selectedEmployees.map((emp) => emp.expertis);
     const templateName = selectedTemplate.nameScheduleTemplate;
-    console.log("Assigning employees:", selectedExpertis, "to template:", templateName);
 
     try {
       const response = await axiosInstance.post("/attendance/setScheduleTemplate", {
         expertisList: selectedExpertis,
         scheduleName: selectedTemplate.nameScheduleTemplate
       });
-      console.log("Assignment successful:", response.data);
       setFilteredEmployees(filteredEmployees.map((emp) => ({ ...emp, selected: false }))); 
       setSelectedTemplate(null);
       setSearchText("");

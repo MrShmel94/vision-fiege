@@ -96,14 +96,12 @@ const AddDocumentView = () => {
         setConfig(response.data);
         
         if (initialData?.isEdit) {
-          console.log('Initial Data:', initialData);
           setFormData({
             ...initialData,
             departments: initialData.departments,
             positions: initialData.positions,
             positionsAssistance: initialData.positionsAssistance
           });
-          console.log('Form Data after setting:', formData);
         }
       } catch (error) {
         setErrorOverlay({
@@ -234,7 +232,6 @@ const AddDocumentView = () => {
   const handleSubmit = async () => {
     try {
       if (initialData?.isEdit) {
-        // Create a complete data object with all fields
         const completeData = {
           name: formData.name || '',
           description: formData.description || '',
@@ -248,7 +245,6 @@ const AddDocumentView = () => {
           positionsAssistance: formData.positionsAssistance || []
         };
         
-        console.log('Submitting complete data:', completeData);
         await axiosInstance.put(`/etc/updateDocument/${initialData.id}`, completeData);
         setCurrentView('documents');
       } else {

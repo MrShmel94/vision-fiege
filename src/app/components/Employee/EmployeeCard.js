@@ -90,7 +90,6 @@ const SECTION_CONFIG = {
 };
 
 const EmployeeCard = ({ expertis, initialData }) => {
-  console.log("INITIAL DATA", initialData);
   const [employee, setEmployee] = useState(initialData || null);
   const [expanded, setExpanded] = useState('profile');
   const { setErrorOverlay } = useAppContext();

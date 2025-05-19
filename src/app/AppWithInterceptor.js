@@ -11,7 +11,6 @@ const AppWithInterceptor = ({ children }) => {
   const responseInterceptorRef = useRef(null);
 
   useEffect(() => {
-    // Add request interceptor first
     requestInterceptorRef.current = axiosInstance.interceptors.request.use(
       (config) => {
         setIsLoading(true);
@@ -19,7 +18,6 @@ const AppWithInterceptor = ({ children }) => {
       }
     );
 
-    // Add response interceptor first
     responseInterceptorRef.current = axiosInstance.interceptors.response.use(
       (response) => {
         setIsLoading(false);
@@ -35,7 +33,6 @@ const AppWithInterceptor = ({ children }) => {
       }
     );
 
-    // Cleanup function
     return () => {
       if (requestInterceptorRef.current !== null) {
         axiosInstance.interceptors.request.eject(requestInterceptorRef.current);

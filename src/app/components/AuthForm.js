@@ -69,10 +69,8 @@ const AuthForm = () => {
         loginFormik.resetForm();
         enqueueSnackbar("Login successful!", { variant: "success", autoHideDuration: 3000 });
         setAccessGranted(true);
-        setTimeout(() => setIsLoggedIn(true), 1500);
-      } catch (error) {
-        // Error handling is done globally by AppWithInterceptor
-      }
+        setTimeout(() => setIsLoggedIn(true), 1000);
+      } catch (error) {}
     },
   });
 
@@ -123,11 +121,9 @@ const AuthForm = () => {
         registerFormik.resetForm();
         setTab(0);
       } catch (error) {
-        // Handle specific error cases
         if (error.response?.data?.message) {
           const errorMessage = error.response.data.message;
           
-          // If user already exists, only clear password
           if (errorMessage.includes("already exists")) {
             registerFormik.setFieldValue("password", "");
             enqueueSnackbar(errorMessage, { 
@@ -140,7 +136,6 @@ const AuthForm = () => {
               ),
             });
           } else {
-            // For other errors (like invalid BR-code or employee not found)
             enqueueSnackbar(errorMessage, { 
               variant: "error", 
               autoHideDuration: 4000 

@@ -64,21 +64,15 @@ const VerifySupervisorsView = () => {
       Swal.fire("Role not found", "Please select a valid role before confirming.", "warning");
       return;
     }
-
-    console.log("Confirming object : " , {
-      userExpertis: user.expertis,
-      roleName: roleName,
-      validFrom: from,
-      validTo: to,
-    });
-
+    
     try {
-      await axiosInstance.post("/users/assign-role", {
-        userExpertis: user.expertis,
+      await axiosInstance.post("/users/verify-account", {
+        expertis: user.expertis,
         roleName: roleName,
         validFrom: from,
         validTo: to,
       });
+
       setUsers((prev) => prev.filter((u) => u.expertis !== user.expertis));
       Swal.fire("Success", "User verified and role assigned.", "success");
     } catch (err) {}

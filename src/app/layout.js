@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 "use client";
 
 import React, { useMemo } from "react";
@@ -16,14 +15,17 @@ import { NotificationProvider } from "./components/Global/GlobalNotification";
 import GlobalLoader from "./components/Global/GlobalLoader";
 import ErrorOverlay from "./components/Global/ErrorOverlay";
 import AuthForm from "./components/AuthForm";
+import WelcomeScreen from "./components/WelcomeScreen";
+import AppWrapper from "./components/AppWrapper";
 
 const keyframesCSS = css`${gradientKeyframes}`;
 
 function LayoutContent({ children }) {
-  const context = useAppContext();
-  const { isLoggedIn } = context ?? {};
+  const { isLoggedIn } = useAppContext();
 
-  return useMemo(() => (
+  if (!isLoggedIn) return null;
+
+  return (
     <>
       <Box sx={gradientBackground} />
       <Box
@@ -36,46 +38,26 @@ function LayoutContent({ children }) {
           zIndex: 1,
         }}
       >
-        {isLoggedIn ? (
-          <>
-            <Sidebar />
-            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-              <Topbar />
-              <Box
-                sx={{
-                  flex: 1,
-                  bgcolor: "rgba(0, 0, 0, 0.6)",
-                  borderRadius: 3,
-                  p: 3,
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflow: "auto",
-                  height: "calc(100vh - 120px)",
-                }}
-              >
-                {children}
-              </Box>
-            </Box>
-          </>
-        ) : (
+        <Sidebar />
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <Topbar />
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100vw",
-              height: "100vh",
-              position: "relative",
-              overflow: "hidden",
+              flex: 1,
+              bgcolor: "rgba(0, 0, 0, 0.6)",
+              borderRadius: 3,
+              p: 3,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+              overflow: "auto",
+              height: "calc(100vh - 120px)",
             }}
           >
-            <AuthForm />
+            {children}
           </Box>
-        )}
+        </Box>
       </Box>
     </>
-  ), [isLoggedIn, children]);
+  );
 }
 
 export default function RootLayout({ children }) {
@@ -83,19 +65,20 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body style={{ margin: 0, padding: 0 }}>
         <Provider store={store}>
-          <AppProvider>
-            <GlobalLoader />
-            <ErrorOverlay />
-            <ThemeProvider theme={theme}>
-              <Global styles={keyframesCSS} />
-              <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-                <NotificationProvider>
-                  <CssBaseline />
-                  <LayoutContent>{children}</LayoutContent>
-                </NotificationProvider>
-              </SnackbarProvider>
-            </ThemeProvider>
-          </AppProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <SnackbarProvider maxSnack={3}>
+              <AppProvider>
+                <AppWrapper>
+                  <GlobalLoader />
+                  <ErrorOverlay />
+                  <NotificationProvider>
+                    <LayoutContent>{children}</LayoutContent>
+                  </NotificationProvider>
+                </AppWrapper>
+              </AppProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
         </Provider>
       </body>
     </html>

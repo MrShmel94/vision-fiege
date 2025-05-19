@@ -25,6 +25,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axiosInstance from "../../axiosInstance";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNotification } from "../Global/GlobalNotification";
+import { PageHeader, PageHeaderTitle, PageHeaderSubtitle } from "../../styles/commonStyles";
+import { useAppContext } from "../../AppContext";
 
 export function BeautifulDatePicker({ label, value, onChange }) {
     return (
@@ -61,59 +63,103 @@ export default function CreateEmployeeForm() {
 
     const [employeesBatch, setEmployeesBatch] = useState([]);
     const [tab, setTab] = useState(0);
-
     const [config, setConfig] = useState(null);
-    const [loadingConfig, setLoadingConfig] = useState(true);
-
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const [loading, setLoading] = useState(false);
+    const { setErrorOverlay, setIsLoading } = useAppContext();
 
     const { notify } = useNotification();
 
     const FileUpload = ({ onFileSelected }) => {
         const { getRootProps, getInputProps, isDragActive } = useDropzone({
-          accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
-          onDrop: acceptedFiles => {
-            onFileSelected(acceptedFiles[0]);
-          },
+            accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
+            onDrop: async (acceptedFiles) => {
+                const file = acceptedFiles[0];
+                if (file) {
+                    try {
+                        setIsLoading(true);
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        const response = await axiosInstance.post('/employee/uploadEmployees', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        });
+
+                        if (response.data.failed > 0) {
+                            response.data.errorMessages.forEach(msg => notify(msg, "error"));
+                        } else {
+                            notify("Employees uploaded successfully!", "success");
+                        }
+                    } catch (error) {
+                        if (error.response?.data) {
+                            if (typeof error.response.data === 'object') {
+                                // Handle validation errors
+                                const errorMessages = Object.entries(error.response.data)
+                                    .map(([field, message]) => `${field}: ${message}`)
+                                    .join('\n');
+                                setErrorOverlay({
+                                    open: true,
+                                    message: errorMessages
+                                });
+                            } else {
+                                // Handle other error messages
+                                setErrorOverlay({
+                                    open: true,
+                                    message: error.response.data
+                                });
+                            }
+                        } else {
+                            setErrorOverlay({
+                                open: true,
+                                message: "Failed to upload employees. Please try again."
+                            });
+                        }
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            },
         });
-      
+
         return (
-          <Box {...getRootProps()} sx={{
-            border: '2px dashed #1976d2',
-            borderRadius: 2,
-            padding: 4,
-            textAlign: 'center',
-            cursor: 'pointer',
-            bgcolor: isDragActive ? 'rgba(25,118,210,0.1)' : 'transparent',
-          }}>
-            <input {...getInputProps()} />
-            <Typography variant="body1">
-              {isDragActive ? "Drop the file here..." : "Drag 'n' drop an XLSX file here, or click to select a file"}
-            </Typography>
-          </Box>
+            <Box {...getRootProps()} sx={{
+                border: '2px dashed #E30613',
+                borderRadius: 2,
+                padding: 4,
+                textAlign: 'center',
+                cursor: 'pointer',
+                bgcolor: isDragActive ? 'rgba(227, 6, 19, 0.1)' : 'transparent',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                    bgcolor: 'rgba(227, 6, 19, 0.05)',
+                    borderColor: '#B30000',
+                }
+            }}>
+                <input {...getInputProps()} />
+                <Typography variant="body1" sx={{ color: isDragActive ? '#E30613' : 'text.primary' }}>
+                    {isDragActive ? "Drop the file here..." : "Drag 'n' drop an XLSX file here, or click to select a file"}
+                </Typography>
+            </Box>
         );
-      };
+    };
 
     useEffect(() => {
         const fetchConfig = async () => {
             try {
+                setIsLoading(true);
                 const res = await axiosInstance.get("employee/config");
                 setConfig(res.data);
-                console.log(res.data);
-
             } catch (err) {
-                console.error(err);
-                setError("Failed to load configuration.");
+                setErrorOverlay({
+                    open: true,
+                    message: "Failed to load configuration. Please try again."
+                });
             } finally {
-                setLoadingConfig(false);
+                setIsLoading(false);
             }
         };
         fetchConfig();
-
-        console.log(config);
-    }, []);
+    }, [setIsLoading, setErrorOverlay]);
 
     const handleAddEmployee = () => {
         if (!formData.expertis || !formData.firstName || !formData.lastName || !formData.sex
@@ -138,29 +184,32 @@ export default function CreateEmployeeForm() {
     };
 
     const sendBatch = async () => {
-        
         try {
-
+            setIsLoading(true);
             const payload = employeesBatch.map(
                 ({ id, brCode, ...rest }) => ({
-                  ...rest,
-                  ...(brCode && brCode.trim().length > 0 ? { brCode } : {}),
+                    ...rest,
+                    ...(brCode && brCode.trim().length > 0 ? { brCode } : {}),
                 })
-              );
+            );
 
             const response = await axiosInstance.post("/employee/createEmployees", { employees: payload });
             
             if (response.data.failed > 0) {
                 response.data.errorMessages.forEach(msg => notify(msg, "error"));
-              } else {
+            } else {
                 notify("Employees added successfully!", "success");
-              }
-      
-          } catch (err) {
-            console.error(err);
-            setError("Failed to assign employees.");
-          }
-    }
+                setEmployeesBatch([]); // Clear the batch after successful creation
+            }
+        } catch (err) {
+            setErrorOverlay({
+                open: true,
+                message: "Failed to create employees. Please try again."
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleDeleteEmployee = (id) => {
         setEmployeesBatch(employeesBatch.filter((emp) => emp.id !== id));
@@ -193,10 +242,18 @@ export default function CreateEmployeeForm() {
     return (
         <Box sx={{ p: 4, maxWidth: 1900, width: 1500, mx: "auto" }}>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                        <Typography variant="h4" gutterBottom>Create Employees</Typography>
-                    </Box>
-            
+            <PageHeader
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+            <PageHeaderTitle>
+                Create Employees
+            </PageHeaderTitle>
+            <PageHeaderSubtitle>
+                Manage add new employees
+            </PageHeaderSubtitle>
+            </PageHeader>
 
             <Tabs
                 value={tab}
@@ -361,7 +418,6 @@ export default function CreateEmployeeForm() {
                 </Typography>
 
                 <FileUpload onFileSelected={(file) => {
-                console.log(file);
                 }} />
 
                 <Button variant="contained" sx={{ mt: 2 }} fullWidth>

@@ -41,6 +41,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import axiosInstance from '../../axiosInstance';
 import { useAppContext } from '../../AppContext';
+import Swal from 'sweetalert2';
 
 const PlanningView = () => {
   const { setIsLoading, setErrorOverlay } = useAppContext();
@@ -88,12 +89,37 @@ const PlanningView = () => {
   };
 
   const handleEditTraining = () => {
-    // TODO: Implement training editing
     handleMenuClose();
   };
 
-  const handleDeleteTraining = () => {
-    // TODO: Implement training deletion
+  const handleDeleteTraining = async (training) => {
+
+    const result = await Swal.fire({
+      title: "Delete Training?",
+      text: "This will delete the training. Are you sure?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete training",
+      confirmButtonColor: "#d33",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.get("/etc/deleteTraining", {
+          params: {
+            id: training.id,
+          }
+        });
+
+        Swal.fire("Success", "Training has been deleted", "success");
+
+        setTrainings(trainings.filter(t => t.id !== training.id));
+
+      } catch (error) {
+        Swal.fire("Error", "Failed to delete training", "error");
+      }
+    }
+
     handleMenuClose();
   };
 
@@ -216,7 +242,7 @@ const PlanningView = () => {
             </ListItemIcon>
             <ListItemText>Edit Training</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleDeleteTraining}>
+          <MenuItem onClick={() => handleDeleteTraining(selectedTraining)}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>
@@ -232,7 +258,6 @@ const PlanningView = () => {
         >
           <DialogTitle>Add Participants</DialogTitle>
           <DialogContent>
-            {/* TODO: Add participant selection form */}
             <Typography>Participant selection form will be implemented here</Typography>
           </DialogContent>
           <DialogActions>

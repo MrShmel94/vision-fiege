@@ -8,12 +8,14 @@ import AttendanceListView from "./components/Attendance/AttendanceListView";
 import TemplateAsigment from "./components/Attendance/TemplateAsigment";
 import TemplateCreator from "./components/Attendance/TemplateCreatorView";
 import VerifySupervisorsView from "./components/Employee/VerifySupervisorView";
+import ManageUserRolesView from "./components/Employee/ManageUserRolesView";
 import EmployeeCard from "./components/Employee/EmployeeCard";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useAppContext } from "./AppContext";
 import AddDocumentView from "./components/etc/AddDocumentView";
 import DocumentsView from "./components/etc/DocumentsView";
 import PlanningView from "./components/etc/PlanningView";
+import AuthForm from "./components/AuthForm";
 
 const HomePage = () => {
   const { currentView, selectedExpertis, initialData } = useAppContext();
@@ -34,6 +36,10 @@ const HomePage = () => {
         return <TemplateCreator />;
       case "verifySupervisor":
         return <VerifySupervisorsView />;
+      case "manageRoles":
+        return <ManageUserRolesView />;
+      case "auth":
+        return <AuthForm />;
       case "employeeCard":
         return <EmployeeCard expertis={selectedExpertis} initialData={initialData} />;
       case "addDocument":
@@ -43,25 +49,7 @@ const HomePage = () => {
       case "planning":
         return <PlanningView />;
       default:
-        return (
-          <Box
-            sx={{
-              textAlign: "center",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-            }}
-          >
-            <Typography variant="h3" color="primary" gutterBottom>
-              Welcome to Vision Fiege
-            </Typography>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              Discover the future of logistics powered by AI and technology.
-            </Typography>
-          </Box>
-        );
+        return <Dashboard />;
     }
   };
 
