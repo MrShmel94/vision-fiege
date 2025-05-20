@@ -33,6 +33,7 @@
     "dayjs": "^1.11.13",
     "formik": "^2.4.6",
     "framer-motion": "^12.5.0",
+    "gsap": "^3.13.0",
     "lottie": "^0.0.1",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.479.0",
