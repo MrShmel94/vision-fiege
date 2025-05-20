@@ -93,7 +93,6 @@ export default function CreateEmployeeForm() {
                     } catch (error) {
                         if (error.response?.data) {
                             if (typeof error.response.data === 'object') {
-                                // Handle validation errors
                                 const errorMessages = Object.entries(error.response.data)
                                     .map(([field, message]) => `${field}: ${message}`)
                                     .join('\n');
@@ -102,7 +101,6 @@ export default function CreateEmployeeForm() {
                                     message: errorMessages
                                 });
                             } else {
-                                // Handle other error messages
                                 setErrorOverlay({
                                     open: true,
                                     message: error.response.data
@@ -199,7 +197,7 @@ export default function CreateEmployeeForm() {
                 response.data.errorMessages.forEach(msg => notify(msg, "error"));
             } else {
                 notify("Employees added successfully!", "success");
-                setEmployeesBatch([]); // Clear the batch after successful creation
+                setEmployeesBatch([]);
             }
         } catch (err) {
             setErrorOverlay({

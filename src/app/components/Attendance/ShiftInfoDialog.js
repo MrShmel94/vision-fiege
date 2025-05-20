@@ -22,7 +22,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 
 export default function ShiftInfoDialog({ open, onClose, editingData, onSave, STATUSES, SHIFTS, showPlannedInfo = true,
-  title = `Shift Information : ${editingData?.date || ""}`,
+  title = `Shift Information : ${editingData?.attendanceDate || ""}`,
   hasSelectedEmployees
 }) {
   const [formData, setFormData] = useState({
@@ -57,12 +57,16 @@ export default function ShiftInfoDialog({ open, onClose, editingData, onSave, ST
 
   useEffect(() => {
     if (open && editingData) {
+      const isFromAttendanceList = editingData.assignedShift !== undefined;
+      
       setFormData({
         attendanceId: editingData.attendanceId || '',
         attendanceDate: editingData.attendanceDate || '',
-        status: editingData.statusCode || '',
-        hours: editingData.hours || '',
-        shift: findShiftNameByCode(editingData.shiftCode) || '',
+        status: isFromAttendanceList ? 'Work' : (editingData.statusCode || ''),
+        hours: isFromAttendanceList ? '8' : (editingData.hours || ''),
+        shift: isFromAttendanceList ? 
+          Object.entries(SHIFTS).find(([_, data]) => data.name === editingData.assignedShift)?.[0] || '' 
+          : (findShiftNameByCode(editingData.shiftCode) || ''),
         comment: editingData.comment || ''
       });
       setErrors({});

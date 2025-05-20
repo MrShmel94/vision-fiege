@@ -203,10 +203,12 @@ const TemplateAssignment = () => {
                 {daysArray.map((day, colIndex) => {
                   const attendanceForDay = temp.schedule[day];
                   const cellContent = attendanceForDay ? attendanceForDay.statusCode : "";
+                  const shiftSymbol = attendanceForDay?.shiftCode ? attendanceForDay.shiftCode : "";
                   return (
                     <Box
                       key={colIndex}
                       sx={{
+                        position: "relative",
                         bgcolor: cellContent && cellContent === "W" ? "black" : "white",
                         p: 1,
                         textAlign: "center",
@@ -221,6 +223,21 @@ const TemplateAssignment = () => {
                       }}
                     >
                       {cellContent === "''" ? "" : cellContent}
+                      {shiftSymbol && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            fontSize: "1rem",
+                            fontWeight: "bold",
+                            color: "#333",
+                          }}
+                        >
+                          {shiftSymbol}
+                        </Typography>
+                      )}
                     </Box>
                   );
                 })}
