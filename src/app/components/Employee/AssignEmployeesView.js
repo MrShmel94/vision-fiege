@@ -14,11 +14,9 @@ import {
   Alert,
   CircularProgress,
   IconButton,
-  Collapse,
   Tooltip,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Swal from 'sweetalert2';
 import Autocomplete from "@mui/material/Autocomplete";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -322,7 +320,6 @@ const AssignEmployeesModern = () => {
 
       await axiosInstance.post("employee/setEmployeeToSupervisor", payload);
       
-      // Reset state and show success
       setEmployees(prev => prev.filter(emp => !selectedEmployeesPanel.some(e => e.id === emp.id)));
       setSelectedSupervisor(null);
       setSelectedEmployeesPanel([]);
@@ -332,7 +329,6 @@ const AssignEmployeesModern = () => {
       setTeamFilter("");
       setSelectedExpertis(null);
 
-      // Navigate back to dashboard
       setCurrentView("dashboard");
 
     } catch (err) {
@@ -363,7 +359,6 @@ const AssignEmployeesModern = () => {
           {mismatchWarning}
         </Alert>
       )}
-      {/* Supervisor selection */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Autocomplete
           options={supervisors}
@@ -451,7 +446,6 @@ const AssignEmployeesModern = () => {
             </Box>
           </Paper>
         </Box>
-        {/* Selected Employees Panel with virtualization */}
         <Box sx={{ width: 350 }}>
           <Paper sx={{ p: 2, height: 705, display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -506,7 +500,6 @@ const AssignEmployeesModern = () => {
           </Paper>
         </Box>
       </Box>
-      {/* Assignment Button */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
         <Button 
           variant="contained" 

@@ -14,7 +14,7 @@ import { Box } from "@mui/material";
 import { useAppContext } from "./AppContext";
 import AddDocumentView from "./components/etc/AddDocumentView";
 import DocumentsView from "./components/etc/DocumentsView";
-import PlanningView from "./components/etc/PlanningView";
+import PlanningView from "./components/etc/PlanningView/PlanningView";
 import AuthForm from "./components/AuthForm";
 
 const HomePage = () => {

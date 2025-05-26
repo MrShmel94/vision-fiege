@@ -13,12 +13,13 @@ import { gradientBackground, gradientKeyframes } from "../theme";
 const keyframesCSS = css`${gradientKeyframes}`;
 
 const AppWrapper = ({ children }) => {
-  const {
-    isLoggedIn,
-    setIsLoggedIn,
-    setUser,
-    setCurrentView,
-    currentView,
+  const { 
+    isLoggedIn, 
+    setIsLoggedIn, 
+    setUser, 
+    setCurrentView, 
+    setErrorOverlay,
+    currentView
   } = useAppContext();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -26,11 +27,15 @@ const AppWrapper = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axiosInstance.get("/users/me");
-        setUser(response.data);
-        setIsLoggedIn(true);
-        setCurrentView("dashboard");
+        const response = await axiosInstance.get("users/me");
+        if (response.data) {
+          setUser(response.data);
+          setIsLoggedIn(true);
+          setCurrentView("dashboard");
+        }
       } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
         setIsLoggedIn(false);
         setCurrentView("welcome");
       } finally {
@@ -39,7 +44,7 @@ const AppWrapper = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, [setIsLoggedIn, setUser, setCurrentView]);
 
   if (isLoading) {
     return (

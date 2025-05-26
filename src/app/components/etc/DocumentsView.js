@@ -22,8 +22,6 @@ import {
   DialogActions,
   Button,
   TextField,
-  FormControl,
-  InputLabel,
   FormControlLabel,
   Checkbox
 } from '@mui/material';
@@ -77,7 +75,8 @@ const DocumentsView = () => {
     description: '',
     place: '',
     documentName: '',
-    isAutoTraining: false
+    isAutoTraining: false,
+    maxSize: 1
   });
 
   const positionsOptions = useMemo(() => 
@@ -152,7 +151,6 @@ const DocumentsView = () => {
   };
 
   const handleViewDocument = () => {
-    // TODO: Implement document viewing
     handleMenuClose();
   };
 
@@ -174,8 +172,26 @@ const DocumentsView = () => {
     }
   };
 
-  const handleDeleteDocument = () => {
-    // TODO: Implement document deletion
+  const handleDeleteDocument = async() => {
+    setIsLoading(true);
+    try {
+      await axiosInstance.get('/etc/deleteDocument', {
+        params: {
+          id: selectedDocument.id
+        }
+      });
+      
+    } catch (error) {
+      setIsLoading(false);
+      setErrorOverlay({
+        open: true,
+        title: "Error",
+        message: "Failed to delete document"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+
     handleMenuClose();
   };
 
@@ -205,7 +221,8 @@ const DocumentsView = () => {
       description: '',
       place: '',
       documentName: '',
-      isAutoTraining: false
+      isAutoTraining: false,
+      maxSize: 1
     });
   };
 
@@ -222,7 +239,8 @@ const DocumentsView = () => {
         description: trainingData.description,
         place: trainingData.place,
         isAutoTraining: trainingData.isAutoTraining,
-        documentName: trainingData.documentName
+        documentName: trainingData.documentName,
+        maxSize: Number(trainingData.maxSize) || 1
       };
 
       await axiosInstance.post('/etc/savePlaningTraining', formattedData);
@@ -447,12 +465,20 @@ const DocumentsView = () => {
                   value={trainingData.startTime}
                   onChange={(newValue) => setTrainingData(prev => ({ ...prev, startTime: newValue }))}
                   sx={{ flex: 1 }}
+                  ampm={false}
+                  minutesStep={5}
+                  disableMaskedInput
+                  closeOnSelect
                 />
                 <StyledTimePicker
                   label="End Time"
                   value={trainingData.endTime}
                   onChange={(newValue) => setTrainingData(prev => ({ ...prev, endTime: newValue }))}
                   sx={{ flex: 1 }}
+                  ampm={false}
+                  minutesStep={5}
+                  disableMaskedInput
+                  closeOnSelect
                 />
               </Box>
             </LocalizationProvider>
@@ -541,6 +567,19 @@ const DocumentsView = () => {
                   fontSize: '1rem',
                 },
               }}
+            />
+
+            <TextField
+              label="Max Employees"
+              type="number"
+              value={trainingData.maxSize}
+              onChange={e => {
+                const value = Math.max(1, Number(e.target.value.replace(/[^0-9]/g, '')));
+                setTrainingData(prev => ({ ...prev, maxSize: value }));
+              }}
+              inputProps={{ min: 1, pattern: '[0-9]*' }}
+              fullWidth
+              sx={{ mt: 2 }}
             />
           </Box>
         </DialogContent>

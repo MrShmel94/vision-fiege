@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Box, CssBaseline } from "@mui/material";
-import { Global, css } from "@emotion/react";
 import { SnackbarProvider } from "notistack";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
-import theme, { gradientBackground, gradientKeyframes } from "./theme";
+import theme, { gradientBackground } from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -14,11 +13,8 @@ import { AppProvider, useAppContext } from "./AppContext";
 import { NotificationProvider } from "./components/Global/GlobalNotification";
 import GlobalLoader from "./components/Global/GlobalLoader";
 import ErrorOverlay from "./components/Global/ErrorOverlay";
-import AuthForm from "./components/AuthForm";
-import WelcomeScreen from "./components/WelcomeScreen";
 import AppWrapper from "./components/AppWrapper";
 
-const keyframesCSS = css`${gradientKeyframes}`;
 
 function LayoutContent({ children }) {
   const { isLoggedIn } = useAppContext();

@@ -1,34 +1,43 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  AppBar, 
-  Toolbar, 
-  Box, 
-  Button, 
+import {
+  Box,
   Typography,
   TextField,
   InputAdornment,
   IconButton,
-  Fade,
+  Button,
   Paper,
   List,
   ListItem,
   ListItemText,
   CircularProgress,
+  Menu,
+  MenuItem,
+  Divider,
+  useTheme,
 } from "@mui/material";
-import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
+import {
+  Search as SearchIcon,
+  Clear as ClearIcon,
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
 import { useAppContext } from "../AppContext";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
-export default function Topbar() {
-  const { setCurrentView, isLoggedIn, setIsLoggedIn, setErrorOverlay, setSelectedExpertis, setInitialData } = useAppContext();
+const Topbar = () => {
+  const theme = useTheme();
+  const { user, setUser, setIsLoggedIn, setCurrentView, setErrorOverlay, setSelectedExpertis, setInitialData } = useAppContext();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -42,21 +51,57 @@ export default function Topbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleProfileMenu = (event) => {
+    setProfileAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileClose = () => {
+    setProfileAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("auth/logout");
+      setUser(null);
+      setIsLoggedIn(false);
+      setCurrentView("welcome");
+      setSelectedExpertis(null);
+      setInitialData(null);
+      sessionStorage.clear();
+      if (window.caches) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            caches.delete(name);
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setErrorOverlay({
+        open: true,
+        message: "Failed to logout. Please try again."
+      });
+    }
+    handleProfileClose();
+  };
+
   const handleSearch = async () => {
     if (searchQuery.trim().length < 3) {
       Swal.fire({
-        title: 'Search Query Too Short',
-        text: 'Please enter at least 3 characters to search',
-        icon: 'info',
-        confirmButtonColor: '#B82136',
-        confirmButtonText: 'OK'
+        title: "Search Query Too Short",
+        text: "Please enter at least 3 characters to search",
+        icon: "info",
+        confirmButtonColor: "#B82136",
+        confirmButtonText: "OK",
       });
       return;
     }
 
     setIsSearching(true);
     try {
-      const response = await axiosInstance.get(`employee/searchQuery/${encodeURIComponent(searchQuery)}`);
+      const response = await axiosInstance.get(
+        `employee/searchQuery/${encodeURIComponent(searchQuery)}`
+      );
       const results = response.data;
       setSearchResults(results);
 
@@ -78,7 +123,7 @@ export default function Topbar() {
   };
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       handleSearch();
     }
   };
@@ -107,7 +152,9 @@ export default function Topbar() {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
-        <Typography variant="h6" color="black">Dashboard</Typography>
+        <Typography variant="h6" color="black">
+          Dashboard
+        </Typography>
         <Box ref={searchRef} sx={{ position: "relative", flex: 1, maxWidth: 500 }}>
           <motion.div
             animate={{
@@ -128,10 +175,10 @@ export default function Topbar() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       {searchQuery && (
-                        <IconButton 
-                          size="small" 
+                        <IconButton
+                          size="small"
                           onClick={() => {
                             setSearchQuery("");
                             setSearchResults([]);
@@ -148,11 +195,11 @@ export default function Topbar() {
                           onClick={handleSearch}
                           startIcon={<SearchIcon />}
                           sx={{
-                            borderRadius: '20px',
-                            textTransform: 'none',
-                            backgroundColor: '#B82136',
-                            '&:hover': {
-                              backgroundColor: '#8f1a2a',
+                            borderRadius: "20px",
+                            textTransform: "none",
+                            backgroundColor: "#B82136",
+                            "&:hover": {
+                              backgroundColor: "#8f1a2a",
                             },
                           }}
                         >
@@ -170,7 +217,7 @@ export default function Topbar() {
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.9)",
                   },
-                  paddingRight: '8px',
+                  paddingRight: "8px",
                 },
               }}
             />
@@ -232,15 +279,118 @@ export default function Topbar() {
           </AnimatePresence>
         </Box>
       </Box>
-      {isLoggedIn && (
-        <Button 
-          variant="contained" 
-          color="error" 
-          onClick={() => setIsLoggedIn(false)}
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <IconButton
+            onClick={handleProfileMenu}
+            sx={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+              },
+              padding: "8px",
+              borderRadius: "12px",
+              mr: 1,
+            }}
+          >
+            <PersonIcon sx={{ color: "black" }} />
+          </IconButton>
+        </motion.div>
+
+        <Menu
+          anchorEl={profileAnchorEl}
+          open={Boolean(profileAnchorEl)}
+          onClose={handleProfileClose}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "16px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+              minWidth: "200px",
+            },
+          }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        >
+          {user && [
+            <Box key="user-info" sx={{ p: 2 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+              >
+                {user.firstName} {user.lastName}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                {user.position}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                {user.department}
+              </Typography>
+            </Box>,
+            <Divider key="divider" />,
+            <MenuItem
+              key="logout"
+              onClick={handleLogout}
+              sx={{
+                py: 1.5,
+                color: theme.palette.error.main,
+                "&:hover": {
+                  backgroundColor: theme.palette.error.light + "20",
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
+              Logout
+            </MenuItem>
+          ]}
+          {!user && (
+            <MenuItem
+              onClick={handleLogout}
+              sx={{
+                py: 1.5,
+                color: theme.palette.error.main,
+                "&:hover": {
+                  backgroundColor: theme.palette.error.light + "20",
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
+              Logout
+            </MenuItem>
+          )}
+        </Menu>
+
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleLogout}
+          startIcon={<LogoutIcon />}
+          sx={{
+            borderRadius: "20px",
+            textTransform: "none",
+            backgroundColor: "#B82136",
+            "&:hover": {
+              backgroundColor: "#8f1a2a",
+            },
+          }}
         >
           Logout
         </Button>
-      )}
+      </Box>
     </Box>
   );
-}
+};
+
+export default Topbar;
