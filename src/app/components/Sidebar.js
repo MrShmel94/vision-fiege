@@ -21,7 +21,8 @@ import {
   WorkHistoryRounded,
   CalendarMonthRounded,
   BadgeRounded,
-  SecurityRounded
+  SecurityRounded,
+  BarChartRounded
 } from "@mui/icons-material";
 
 const SidebarContainer = styled(Box)(({ theme }) => ({
@@ -197,6 +198,9 @@ const menuItems = {
     { title: "Documents", icon: <BadgeRounded />, view: "documents" },
     { title: "Planning", icon: <EventNoteRounded />, view: "planning" },
   ],
+  performance: [
+    { title: "Performance Overview", icon: <BarChartRounded />, view: "performance" },
+  ],
 };
 
 export default function Sidebar() {
@@ -205,6 +209,7 @@ export default function Sidebar() {
     employees: false,
     attendance: false,
     documents: false,
+    performance: false,
   });
 
   const toggleSection = (section) => {
@@ -213,6 +218,7 @@ export default function Sidebar() {
         employees: false,
         attendance: false,
         documents: false,
+        performance: false,
       };
       newState[section] = !prev[section];
       return newState;
@@ -316,6 +322,33 @@ export default function Sidebar() {
           <Collapse in={openSections.documents} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {menuItems.documents.map((item) => (
+                <StyledListItemButton
+                  key={item.title}
+                  sx={{ pl: 4 }}
+                  onClick={() => setCurrentView(item.view)}
+                  selected={currentView === item.view}
+                >
+                  <StyledListItemIcon>{item.icon}</StyledListItemIcon>
+                  <StyledListItemText primary={item.title} />
+                </StyledListItemButton>
+              ))}
+            </List>
+          </Collapse>
+
+          <CategoryTitle>PERFORMANCE</CategoryTitle>
+          <StyledListItemButton 
+            onClick={() => toggleSection("performance")}
+            selected={openSections.performance}
+          >
+            <StyledListItemIcon>
+              <BarChartRounded />
+            </StyledListItemIcon>
+            <StyledListItemText primary="Performance" />
+            {openSections.performance ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+          </StyledListItemButton>
+          <Collapse in={openSections.performance} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {menuItems.performance.map((item) => (
                 <StyledListItemButton
                   key={item.title}
                   sx={{ pl: 4 }}

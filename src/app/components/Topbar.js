@@ -23,11 +23,13 @@ import {
   Clear as ClearIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
+  Upload as UploadIcon,
 } from "@mui/icons-material";
 import { useAppContext } from "../AppContext";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
+import UploadPerformanceModal from "./Modal/UploadPerformanceModal";
 
 const Topbar = () => {
   const theme = useTheme();
@@ -38,6 +40,8 @@ const Topbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const [uploadAnchorEl, setUploadAnchorEl] = useState(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -83,6 +87,21 @@ const Topbar = () => {
       });
     }
     handleProfileClose();
+  };
+
+  const handleUploadMenu = (event) => {
+    setUploadAnchorEl(event.currentTarget);
+  };
+
+  const handleUploadClose = () => {
+    setUploadAnchorEl(null);
+  };
+
+  const handleUploadClick = (type) => {
+    handleUploadClose();
+    if (type === 'performance') {
+      setIsUploadModalOpen(true);
+    }
   };
 
   const handleSearch = async () => {
@@ -285,6 +304,59 @@ const Topbar = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
+          <Button
+            variant="contained"
+            startIcon={<UploadIcon />}
+            onClick={handleUploadMenu}
+            sx={{
+              borderRadius: "20px",
+              textTransform: "none",
+              backgroundColor: "#B82136",
+              "&:hover": {
+                backgroundColor: "#8f1a2a",
+              },
+              mr: 1,
+            }}
+          >
+            Upload
+          </Button>
+        </motion.div>
+
+        <Menu
+          anchorEl={uploadAnchorEl}
+          open={Boolean(uploadAnchorEl)}
+          onClose={handleUploadClose}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "16px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+              minWidth: "200px",
+            },
+          }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        >
+          <MenuItem
+            onClick={() => handleUploadClick('performance')}
+            sx={{
+              py: 1.5,
+              "&:hover": {
+                backgroundColor: "rgba(184, 33, 54, 0.1)",
+              },
+            }}
+          >
+            <UploadIcon sx={{ mr: 1, fontSize: 20, color: "#B82136" }} />
+            Performance File
+          </MenuItem>
+        </Menu>
+
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           <IconButton
             onClick={handleProfileMenu}
             sx={{
@@ -389,6 +461,11 @@ const Topbar = () => {
           Logout
         </Button>
       </Box>
+
+      <UploadPerformanceModal
+        open={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+      />
     </Box>
   );
 };

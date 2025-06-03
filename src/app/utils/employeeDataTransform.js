@@ -26,6 +26,7 @@ export const transformEmployeeData = (data) => {
     position: data.positionName,
     agency: data.agencyName,
     isWork: data.isWork ?? true,
+    isSupervisor : data.isSupervisor ?? false,
     isCanHasAccount: data.isCanHasAccount ?? false,
     validToAccount: transformDateTime(data.validToAccount),
     validFromAccount: transformDateTime(data.validFromAccount),

@@ -16,6 +16,7 @@ import AddDocumentView from "./components/etc/AddDocumentView";
 import DocumentsView from "./components/etc/DocumentsView";
 import PlanningView from "./components/etc/PlanningView/PlanningView";
 import AuthForm from "./components/AuthForm";
+import PerformanceView from "./components/Performance/PerformanceView";
 
 const HomePage = () => {
   const { currentView, selectedExpertis, initialData } = useAppContext();
@@ -48,6 +49,8 @@ const HomePage = () => {
         return <DocumentsView />;
       case "planning":
         return <PlanningView />;
+      case "performance":
+        return <PerformanceView />;
       default:
         return <Dashboard />;
     }
