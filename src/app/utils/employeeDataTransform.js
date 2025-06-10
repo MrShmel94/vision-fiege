@@ -13,7 +13,6 @@ export const transformEmployeeData = (data) => {
 
   return {
     expertis: data.expertis,
-    zalosId: data.zalosId || null,
     brCode: data.brCode || null,
     firstName: data.firstName,
     lastName: data.lastName,

@@ -36,7 +36,6 @@ const SECTION_CONFIG = {
       { label: 'Last Name', field: 'lastName' },
       { label: 'Sex', field: 'sex' },
       { label: 'BR Code', field: 'brCode' },
-      { label: 'Zalos ID', field: 'zalosId' },
       { label: 'Expertise', field: 'expertis' },
     ],
   },
